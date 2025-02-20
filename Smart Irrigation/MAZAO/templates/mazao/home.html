@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    
+    <!-- font awesome file link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!--css link code-->
+    <!-- <link rel="stylesheet" href="style.css"> -->
+
+    <title>Mazao web</title>
+    <script>
+        function triggerFunction() {
+            fetch("{% url 'button_click' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken()
+                }
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message || data.error))
+            .catch(error => console.error("Error:", error));
+        }
+
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <!-- logo name  -->
+        <a href="#" class="logo"><i class="fas fa-tree"></i>  MAZAO.</a>
+
+        <!-- navbar icons  -->
+        <div class="fas fa-bars"></div>
+        <!-- navbar link  -->
+        <nav class="navbar">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About us</a></li>
+                <li><a href="#servics">Services</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- home section start  -->
+
+    <section id="home" class="home">
+
+        <!-- home heading & text  -->
+        <h1 class="banner">Mazao</h1>
+        <h2 class="slogan">Empowering young farmers</h2>
+        <!-- home btn  -->
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="button" onclick="triggerFunction()">Get Started</button>
+        </form>
+        <div id="loading">Fetching data, please wait ...</div>
+        <table id="data-table", style="display: none">
+            <thead>
+                <tr>
+                    <th>City Name</th>
+                    <th>Day</th>
+                    <th>Will it rain</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+            </tbody>
+        </table>
+        <script>
+            window.onload = function() {
+                fetch('http://127.0.0.1:8000/weather-api/').then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        document.getElementById("loading").style.display = "none";
+                        document.getElementById('data-table').style.display = "table";
+    
+                        const tbody = document.getElementById("table-body");
+                        data.forEach(entry => {
+                            const row = `
+                                <tr>
+                                    <td>${entry.cityName}</td>
+                                    <td>${ entry.day }</td>
+                                    <td>${ entry.willitraintommorow }</td>
+                                </tr>
+                            `;
+                            tbody.innerHTML += row;
+                        })
+                    }else{
+                        document.getElementById('loading').innerText = "No data availble";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    document.getElementById("loading").innerText = "Failed to fetch data";
+                });
+            }
+        </script>
+    
+    </section>
+
+
+    <!-- home section end  -->
+
+    <!-- about section start  -->
+
+    <section id="about" class="about">
+
+        <!-- about heading  -->
+        <h1 class="heading">About us</h1>
+
+        <div class="row">
+            <!-- about heading & text  -->
+            <div class="content">
+                <h2>consistency</h2>
+                <p>A cloud-based irrigation system offers real-time monitoring and control capabilities, 
+                 allowing farmers to make informed decisions based on accurate data regarding soil moisture levels, weather forecasts, and crop water requirements. This precision approach enables farmers to tailor irrigation practices to the specific needs of their crops, optimizing resource utilization and maximizing productivity</p>
+                <a href="#"> <button class="btn">read more</button></a>
+            </div>
+
+        </div>
+
+
+    </section>
+    <!-- about section end  -->
+
+    <!-- service section start  -->
+
+    <section id="servics" class="service">
+
+        <!-- heading  -->
+        <h1 class="heading">Services</h1>
+
+        <div class="row">
+
+            <!-- service heading & text   -->
+            <div class="content">
+                <h2>Real-time Monitoring and control</h2>
+                <p>At Mazao we offer Real-time Monitoring and control.
+                    where the farmer can manage and control his/her crops through viewing and control the soil moisture
+                    weather data and the system status.</p>
+                <a href="#"> <button class="btn">read more</button></a>
+            </div>
+        </div>
+        <div class="row">
+
+            <!-- service heading & text   -->
+            <div class="content">
+                <h2>Modern farming</h2>
+                <p>At Mazao we promote modern farming through modern methods such as smart irrigation etc</p>
+                <a href="#"> <button class="btn">read more</button></a>
+            </div>
+
+        </div>
+        <div class="row">
+
+            <!-- service heading & text   -->
+            <div class="content">
+                <h2>System management</h2>
+                <p> For perennial crops eg maize, the drip hose should be lifted periodically if a drip hose system is used on the soil surface, so that leaves, soil, and debris do not cover the hose. If the drip hose is not lifted, 
+                    roots can grow over the hose, anchor it to the ground, and eventually pinch off the flow of water.</p>
+                <a href="#"> <button class="btn">read more</button></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- service section end  -->
+
+
+    
+
+
+
+</body>
+</html>
