@@ -75,7 +75,7 @@
         </table>
         <script>
             window.onload = function() {
-                fetch('http://127.0.0.1:8000/weather-api/').then(response => response.json())
+                fetch('https://mazaoweb.pythonanywhere.com/weather-api/').then(response => response.json())
                 .then(data => {
                     if (data.length > 0) {
                         document.getElementById("loading").style.display = "none";
