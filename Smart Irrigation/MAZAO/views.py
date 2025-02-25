@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.timezone import localtime
 
 
 def home(request):
@@ -88,16 +89,31 @@ def my_api_view(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)  # Parse JSON data from request body
-            temparature = data.get("temperature")
-            humidity = data.get("humidity")
-            moisture = data.get("moisture")    
-
-            # Process data (e.g., save to DB, perform operations)
-            response_data = {"message": "Data received", "temparature": temparature, "humidity": humidity, "moisture": moisture}
             
+            # Validate required fields
+            required_fields = ["temperature", "humidity", "moisture"]
+            if not all(k in data for k in required_fields):
+                return JsonResponse({"error": "Missing required fields"}, status=400)
+            
+            # Extract values
+            temperature = data.get("temperature")
+            humidity = data.get("humidity")
+            moisture = data.get("moisture")
+
+            latestWeather = weather.objects.latest('day')
+            willItRain = latestWeather.willitraintommorow
+            print(f"will it rain is {willItRain}")
+
+            # Decide irrigation
+            if willItRain:
+                response_data = {"irrigate": False}
+            else:
+                response_data = {"irrigate": moisture > 3000}
+
             return JsonResponse(response_data, status=201)
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
 
     return JsonResponse({"error": "Only POST requests allowed"}, status=405)
+

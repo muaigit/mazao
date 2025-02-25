@@ -8,3 +8,10 @@ class weather(models.Model):
 
     def __str__(self):
         return self.cityName
+    
+class SensorData(models.Model):
+    temperature=models.IntegerField()
+    humidity=models.IntegerField()
+    moisture=models.IntegerField()
+    time=models.DateTimeField(auto_now_add=True)
+    irigate=models.BooleanField()
